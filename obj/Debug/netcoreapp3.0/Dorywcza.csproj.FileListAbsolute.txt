@@ -1,0 +1,10 @@
+C:\Users\Wojciech\Desktop\ProjektPraca\Dorywcza\Dorywcza\bin\Debug\netcoreapp3.0\appsettings.Development.json
+C:\Users\Wojciech\Desktop\ProjektPraca\Dorywcza\Dorywcza\bin\Debug\netcoreapp3.0\appsettings.json
+C:\Users\Wojciech\Desktop\ProjektPraca\Dorywcza\Dorywcza\bin\Debug\netcoreapp3.0\Properties\launchSettings.json
+C:\Users\Wojciech\Desktop\ProjektPraca\Dorywcza\Dorywcza\bin\Debug\netcoreapp3.0\Dorywcza.exe
+C:\Users\Wojciech\Desktop\ProjektPraca\Dorywcza\Dorywcza\obj\Debug\netcoreapp3.0\Dorywcza.csprojAssemblyReference.cache
+C:\Users\Wojciech\Desktop\ProjektPraca\Dorywcza\Dorywcza\obj\Debug\netcoreapp3.0\staticwebassets\Dorywcza.StaticWebAssets.Manifest.cache
+C:\Users\Wojciech\Desktop\ProjektPraca\Dorywcza\Dorywcza\obj\Debug\netcoreapp3.0\staticwebassets\Dorywcza.StaticWebAssets.xml
+C:\Users\Wojciech\Desktop\ProjektPraca\Dorywcza\Dorywcza\obj\Debug\netcoreapp3.0\Dorywcza.AssemblyInfoInputs.cache
+C:\Users\Wojciech\Desktop\ProjektPraca\Dorywcza\Dorywcza\obj\Debug\netcoreapp3.0\Dorywcza.AssemblyInfo.cs
+C:\Users\Wojciech\Desktop\ProjektPraca\Dorywcza\Dorywcza\obj\Debug\netcoreapp3.0\Dorywcza.RazorTargetAssemblyInfo.cache
