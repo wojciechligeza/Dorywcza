@@ -2,11 +2,13 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Dorywcza.Data;
+using Microsoft.AspNetCore.Cors;
 
 namespace Dorywcza.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors]
     public class CategoriesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -53,7 +55,7 @@ namespace Dorywcza.Controllers
         }
         private bool CategoryExists(int id)
         {
-            return _context.Categories.Any(e => e.CategoryId == id);
+            return _context.Categories.Any(a => a.CategoryId == id);
         }
     }
 }

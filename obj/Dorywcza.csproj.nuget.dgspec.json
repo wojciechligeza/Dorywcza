@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Wojciech\\Desktop\\ProjektPraca\\Dorywcza\\Dorywcza\\Dorywcza.csproj": {}
+    "C:\\Users\\Wojciech\\Desktop\\ProjektPraca\\Server-side\\Dorywcza\\Dorywcza.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Wojciech\\Desktop\\ProjektPraca\\Dorywcza\\Dorywcza\\Dorywcza.csproj": {
+    "C:\\Users\\Wojciech\\Desktop\\ProjektPraca\\Server-side\\Dorywcza\\Dorywcza.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Wojciech\\Desktop\\ProjektPraca\\Dorywcza\\Dorywcza\\Dorywcza.csproj",
+        "projectUniqueName": "C:\\Users\\Wojciech\\Desktop\\ProjektPraca\\Server-side\\Dorywcza\\Dorywcza.csproj",
         "projectName": "Dorywcza",
-        "projectPath": "C:\\Users\\Wojciech\\Desktop\\ProjektPraca\\Dorywcza\\Dorywcza\\Dorywcza.csproj",
+        "projectPath": "C:\\Users\\Wojciech\\Desktop\\ProjektPraca\\Server-side\\Dorywcza\\Dorywcza.csproj",
         "packagesPath": "C:\\Users\\Wojciech\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Wojciech\\Desktop\\ProjektPraca\\Dorywcza\\Dorywcza\\obj\\",
+        "outputPath": "C:\\Users\\Wojciech\\Desktop\\ProjektPraca\\Server-side\\Dorywcza\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -41,6 +41,10 @@
       "frameworks": {
         "netcoreapp3.0": {
           "dependencies": {
+            "Microsoft.AspNetCore.Cors": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[3.1.0, )"
@@ -55,9 +59,17 @@
               "target": "Package",
               "version": "[3.1.0, )"
             },
+            "Microsoft.Extensions.Logging.Debug": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
               "version": "[1.9.5, )"
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[3.0.0, )"
             }
           },
           "imports": [

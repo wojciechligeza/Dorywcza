@@ -11,7 +11,7 @@ namespace Dorywcza.Models
         public string Description { get; set; }
         [Column(TypeName = "decimal(10,2)")]
         public decimal Salary { get; set; }
-        public DateTime TimeFrame { get; set; }
+        public string TimeFrame { get; set; }
         public int AmountOfPlaces { get; set; }
         public DateTime AddDate { get; set; }
         public bool QualificationIsRequired { get; set; }

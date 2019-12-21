@@ -16,7 +16,7 @@ namespace Dorywcza.Models
         [EmailAddress]
         public string Email { get; set; }
         [Phone]
-        public int Phone { get; set; }
+        public string Phone { get; set; }
         [StringLength(1000)]
         public string Qualification { get; set; }
         [StringLength(2000)]

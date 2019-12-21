@@ -35,6 +35,14 @@ namespace Dorywcza.Migrations
                     b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryId = 1,
+                            TypeOfJob = "Prace budowlane",
+                            Workplace = "Katowice"
+                        });
                 });
 
             modelBuilder.Entity("Dorywcza.Models.Employee", b =>
@@ -69,8 +77,8 @@ namespace Dorywcza.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Phone")
-                        .HasColumnType("int");
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Qualification")
                         .HasColumnType("nvarchar(1000)")
@@ -79,6 +87,21 @@ namespace Dorywcza.Migrations
                     b.HasKey("EmployeeId");
 
                     b.ToTable("Employees");
+
+                    b.HasData(
+                        new
+                        {
+                            EmployeeId = 1,
+                            Age = 22,
+                            AgreementRodo = true,
+                            Comment = "Czy jest przerwa na piwo?",
+                            Email = "example@example",
+                            Experience = "3 lata na budowie",
+                            Gender = "M",
+                            Name = "Jan Kowalski",
+                            Phone = "+48 000 000 000",
+                            Qualification = "Certyfikat QWERTY, Ukończone technikum budowlane"
+                        });
                 });
 
             modelBuilder.Entity("Dorywcza.Models.Employer", b =>
@@ -97,6 +120,14 @@ namespace Dorywcza.Migrations
                     b.HasKey("EmployerId");
 
                     b.ToTable("Employers");
+
+                    b.HasData(
+                        new
+                        {
+                            EmployerId = 1,
+                            CompanyName = "ConstructNext",
+                            Description = "Zajmujemy się budową obiektów różnego przeznaczenia"
+                        });
                 });
 
             modelBuilder.Entity("Dorywcza.Models.JobOffer", b =>
@@ -136,8 +167,8 @@ namespace Dorywcza.Migrations
                     b.Property<bool>("State")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("TimeFrame")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("TimeFrame")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("JobOfferId");
 
@@ -148,6 +179,23 @@ namespace Dorywcza.Migrations
                     b.HasIndex("EmployerId");
 
                     b.ToTable("JobOffers");
+
+                    b.HasData(
+                        new
+                        {
+                            JobOfferId = 1,
+                            AddDate = new DateTime(2019, 12, 20, 0, 0, 0, 0, DateTimeKind.Local),
+                            AmountOfPlaces = 1,
+                            CategoryId = 1,
+                            Description = "Praca na budowie sklepu spożywczego w 5-osobowym zespole",
+                            EmployeeId = 1,
+                            EmployerId = 1,
+                            Name = "Praca budowlana na Zawodziu",
+                            QualificationIsRequired = false,
+                            Salary = 6000m,
+                            State = true,
+                            TimeFrame = "12.12.2019-14.12.2019"
+                        });
                 });
 
             modelBuilder.Entity("Dorywcza.Models.JobOffer", b =>
