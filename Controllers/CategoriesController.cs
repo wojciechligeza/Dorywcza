@@ -8,7 +8,7 @@ namespace Dorywcza.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors]
+    [EnableCors("GetOnly")]
     public class CategoriesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -52,10 +52,6 @@ namespace Dorywcza.Controllers
             {
                 return BadRequest(e.Message);
             }
-        }
-        private bool CategoryExists(int id)
-        {
-            return _context.Categories.Any(a => a.CategoryId == id);
         }
     }
 }

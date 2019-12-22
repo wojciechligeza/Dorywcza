@@ -36,6 +36,14 @@ namespace Dorywcza
                             .AllowAnyMethod();
                     });
 
+                options.AddPolicy("GetOnly", 
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:4200")
+                            .AllowAnyHeader()
+                            .WithMethods("GET");
+                    });
+
                 options.AddPolicy("AnyOriginAllowed", 
                     builder =>
                     {
