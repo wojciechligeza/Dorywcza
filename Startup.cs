@@ -20,12 +20,13 @@ namespace Dorywcza
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DorywczaConnection")));
 
+            #region CORS Policies
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(
@@ -52,6 +53,7 @@ namespace Dorywcza
                             .AllowAnyMethod();
                     });
             });
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,6 +69,8 @@ namespace Dorywcza
             app.UseRouting();
 
             app.UseCors();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

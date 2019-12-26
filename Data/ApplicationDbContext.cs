@@ -23,7 +23,7 @@ namespace Dorywcza.Data
                     Name = "Praca budowlana na Zawodziu",
                     Description = "Praca na budowie sklepu spożywczego w 5-osobowym zespole",
                     Salary = 6000M,
-                    TimeFrame = "12.12.2019-14.12.2019",
+                    TimeFrame = "12.12.2019 - 14.12.2019",
                     AmountOfPlaces = 1,
                     AddDate = DateTime.Today,
                     QualificationIsRequired = false,

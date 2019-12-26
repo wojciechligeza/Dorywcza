@@ -12,9 +12,12 @@ namespace Dorywcza.Models
         [Required]
         public string Gender { get; set; }
         [Required]
+        [RegularExpression("^[0-9]{2}$")]
         public int Age { get; set; }
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
+        [Required]
         [Phone]
         public string Phone { get; set; }
         [StringLength(1000)]
