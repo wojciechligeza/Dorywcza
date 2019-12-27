@@ -1,9 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Dorywcza.Data;
 using Dorywcza.Models;
+using Dorywcza.Services.EmailService;
 using Microsoft.AspNetCore.Cors;
 
 namespace Dorywcza.Controllers
@@ -14,10 +17,12 @@ namespace Dorywcza.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailProvider _emailProvider;
 
-        public EmployeesController(ApplicationDbContext context)
+        public EmployeesController(ApplicationDbContext context, IEmailProvider emailProvider)
         {
             _context = context;
+            _emailProvider = emailProvider;
         }
 
         // GET: api/Employees
@@ -91,6 +96,7 @@ namespace Dorywcza.Controllers
             {
                 _context.Employees.Add(employee);
                 _context.SaveChanges();
+                EmailSend(employee);
                 return Ok("Data created");
             }
             catch (Exception e)
@@ -99,6 +105,41 @@ namespace Dorywcza.Controllers
             }
         }
 
+        #region HttpPostEmployee Helper
+        private void EmailSend(Employee employee)
+        {
+            var emailAddress = new EmailAddress(employee.Name, employee.Email);
+            var emailMessage = new EmailMessage();
+
+            try
+            {
+                emailMessage.FromAddresses.Add(new EmailAddress());
+                emailMessage.ToAddresses.Add(emailAddress);
+                emailMessage.Subject = "Prośba o pracę";
+
+                using (var fileStream = new FileStream(@"Services\EmailService\EmailToEmployee.txt", FileMode.Open, FileAccess.Read))
+                {
+                    using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
+                    {
+                        emailMessage.Content = streamReader.ReadToEnd();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ExceptionAlert(e.Message);
+            }
+
+            _emailProvider.Send(emailMessage);
+        }
+
+        public IActionResult ExceptionAlert(string e)
+        {
+            if(e!=null) return BadRequest(e);
+            else return NotFound();
+        }
+        #endregion
+        
         // DELETE: api/Employees/1
         [HttpDelete("{id}")]
         public IActionResult DeleteEmployee(int id)

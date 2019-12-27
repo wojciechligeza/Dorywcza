@@ -42,6 +42,24 @@ namespace Dorywcza.Migrations
                             CategoryId = 1,
                             TypeOfJob = "Prace budowlane",
                             Workplace = "Katowice"
+                        },
+                        new
+                        {
+                            CategoryId = 2,
+                            TypeOfJob = "Prace biurowe",
+                            Workplace = "Katowice"
+                        },
+                        new
+                        {
+                            CategoryId = 3,
+                            TypeOfJob = "Prace transportowe",
+                            Workplace = "Katowice"
+                        },
+                        new
+                        {
+                            CategoryId = 4,
+                            TypeOfJob = "Opieka",
+                            Workplace = "Katowice"
                         });
                 });
 
@@ -186,7 +204,7 @@ namespace Dorywcza.Migrations
                         new
                         {
                             JobOfferId = 1,
-                            AddDate = new DateTime(2019, 12, 26, 0, 0, 0, 0, DateTimeKind.Local),
+                            AddDate = new DateTime(2019, 12, 27, 0, 0, 0, 0, DateTimeKind.Local),
                             AmountOfPlaces = 1,
                             CategoryId = 1,
                             Description = "Praca na budowie sklepu spożywczego w 5-osobowym zespole",

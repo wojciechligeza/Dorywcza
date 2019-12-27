@@ -39,7 +39,26 @@ namespace Dorywcza.Data
                     CategoryId = 1,
                     TypeOfJob = "Prace budowlane",
                     Workplace = "Katowice"
-                });
+                },
+                new Category()
+                {
+                    CategoryId = 2,
+                    TypeOfJob = "Prace biurowe",
+                    Workplace = "Katowice"
+                },
+                new Category()
+                {
+                    CategoryId = 3,
+                    TypeOfJob = "Prace transportowe",
+                    Workplace = "Katowice"
+                },
+                new Category()
+                {
+                    CategoryId = 4,
+                    TypeOfJob = "Opieka",
+                    Workplace = "Katowice"
+                }
+                );
 
             modelBuilder.Entity<Employee>().HasData(
                 new Employee()
