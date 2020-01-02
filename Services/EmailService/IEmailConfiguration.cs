@@ -1,6 +1,6 @@
 ﻿namespace Dorywcza.Services.EmailService
 {
-    public interface IEmailConfiguration
+    interface IEmailConfiguration
     {
         string SmtpServer { get; }
         int SmtpPort { get; }

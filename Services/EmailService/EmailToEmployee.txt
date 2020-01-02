@@ -1,12 +1,8 @@
-﻿<!DOCTYPE html>
-<html>
-<body>
-<h2>Szanowny Kliencie,</h2>
+﻿<h3>Formularz oferty pracy</h3>
 <br>
-<p>Twój formularz został wysłany. Proszę czekać na wiadomość od pracodawcy.</p>
+<p>Szanowny Kliencie, <br>
+Twój formularz został wysłany. Proszę czekać na wiadomość od pracodawcy.</p>
 <br>
 <h4>Z wyrazami szacunku,<h4>
 <br>
-<i>Zespół Dorywcza.pl</i>
-</body>
-</html>
+Zespół <i>Dorywcza.pl</i>

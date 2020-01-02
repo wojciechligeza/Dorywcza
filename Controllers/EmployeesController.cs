@@ -115,7 +115,7 @@ namespace Dorywcza.Controllers
             {
                 emailMessage.FromAddresses.Add(new EmailAddress());
                 emailMessage.ToAddresses.Add(emailAddress);
-                emailMessage.Subject = "Prośba o pracę";
+                emailMessage.Subject = "Praca";
 
                 using (var fileStream = new FileStream(@"Services\EmailService\EmailToEmployee.txt", FileMode.Open, FileAccess.Read))
                 {
@@ -135,8 +135,7 @@ namespace Dorywcza.Controllers
 
         public IActionResult ExceptionAlert(string e)
         {
-            if(e!=null) return BadRequest(e);
-            else return NotFound();
+            return BadRequest(e);
         }
         #endregion
         

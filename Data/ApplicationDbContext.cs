@@ -1,5 +1,6 @@
 ﻿using System;
 using Dorywcza.Models;
+using Dorywcza.Models.Auth;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dorywcza.Data
@@ -12,6 +13,7 @@ namespace Dorywcza.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Employer> Employers { get; set; }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<User> Users { get; set; }
 
         #region Initial values
         protected override void OnModelCreating(ModelBuilder modelBuilder)
