@@ -1,4 +1,4 @@
-﻿namespace Dorywcza.Services.EmailService
+﻿namespace Dorywcza.Services.EmailService.Helpers
 {
     interface IEmailConfiguration
     {

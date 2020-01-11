@@ -1,4 +1,4 @@
-﻿namespace Dorywcza.Services.AuthService
+﻿namespace Dorywcza.Services.AuthService.Helpers
 {
     public class AuthConfiguration : IAuthConfiguration
     {

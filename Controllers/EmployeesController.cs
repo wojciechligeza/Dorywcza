@@ -2,11 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Dorywcza.Data;
 using Dorywcza.Models;
 using Dorywcza.Services.EmailService;
+using Dorywcza.Services.EmailService.Helpers;
 using Microsoft.AspNetCore.Cors;
 
 namespace Dorywcza.Controllers
@@ -27,12 +29,59 @@ namespace Dorywcza.Controllers
 
         // GET: api/Employees
         [HttpGet]
-        public IActionResult GetEmployees()
+        public async Task<IActionResult> GetEmployees()
         {
             try
             {
-                var employees = _context.Employees.ToList();
+                var employees = await _context.Employees
+                    .Include(a => a.JobOfferEmployees)
+                    .ThenInclude(b => b.JobOffer).ToListAsync();
+
                 return Ok(employees);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        // GET: api/Employees/forEmployer/1
+        [HttpGet("forEmployer/{id}")]
+        public async Task<IActionResult> GetEmployeesForEmployer(int id)
+        {
+            try
+            {
+                var employees = await _context.Employees
+                    .Include(a => a.JobOfferEmployees)
+                    .ThenInclude(b => b.JobOffer).ToListAsync();
+
+                var employer = await _context.Employers.FirstOrDefaultAsync(a => a.UserId == id);
+
+                if (employer != null)
+                {
+                    if (employer.JobOffers.Count == 1)
+                    {
+                        var result = from employee in employees
+                                        let jobOffers = employee.JobOfferEmployees
+                                            .Where(a => a.JobOffer.EmployerId == employer.EmployerId)
+                                        where jobOffers.Any()
+                                        select employee;
+
+                        return Ok(result);
+                    }
+                    else
+                    {
+
+                        var results = employees.SelectMany(a =>
+                            a.JobOfferEmployees.Where(b => b.JobOffer.EmployerId == employer.EmployerId));
+
+                        return Ok(results);
+                    }
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
             catch (Exception e)
             {
@@ -42,11 +91,13 @@ namespace Dorywcza.Controllers
 
         // GET: api/Employees/1
         [HttpGet("{id}")]
-        public IActionResult GetEmployee(int id)
+        public async Task<IActionResult> GetEmployee(int id)
         {
             try
             {
-                var employee = _context.Employees.FirstOrDefault(a => a.EmployeeId == id);
+                var employee = await _context.Employees
+                    .Include(a => a.JobOfferEmployees)
+                    .ThenInclude(b => b.JobOffer).FirstOrDefaultAsync(a => a.EmployeeId == id);
 
                 if (employee == null)
                 {
@@ -62,7 +113,7 @@ namespace Dorywcza.Controllers
 
         // PUT: api/Employees/1
         [HttpPut("{id}")]
-        public IActionResult PutEmployee(int id, [FromBody]Employee employee)
+        public async Task<IActionResult> PutEmployee(int id, [FromBody]Employee employee)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             if (id != employee.EmployeeId) return BadRequest();
@@ -76,7 +127,7 @@ namespace Dorywcza.Controllers
                 else
                 {
                     _context.Entry(employee).State = EntityState.Modified;
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                     return Ok("Data updated");
                 }
             }
@@ -88,15 +139,15 @@ namespace Dorywcza.Controllers
 
         // POST: api/Employees
         [HttpPost]
-        public IActionResult PostEmployee([FromBody]Employee employee)
+        public async Task<IActionResult> PostEmployee([FromBody]Employee employee)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             try
             {
                 _context.Employees.Add(employee);
-                _context.SaveChanges();
-                EmailSend(employee);
+                await _context.SaveChangesAsync();
+                SendFirstEmail(employee);
                 return Ok("Data created");
             }
             catch (Exception e)
@@ -106,7 +157,7 @@ namespace Dorywcza.Controllers
         }
 
         #region HttpPostEmployee Helper
-        private void EmailSend(Employee employee)
+        private void SendFirstEmail(Employee employee)
         {
             var emailAddress = new EmailAddress(employee.Name, employee.Email);
             var emailMessage = new EmailMessage();
@@ -117,7 +168,7 @@ namespace Dorywcza.Controllers
                 emailMessage.ToAddresses.Add(emailAddress);
                 emailMessage.Subject = "Praca";
 
-                using (var fileStream = new FileStream(@"Services\EmailService\EmailToEmployee.txt", FileMode.Open, FileAccess.Read))
+                using (var fileStream = new FileStream(@"Services\EmailService\EmailText\EmailToEmployee.txt", FileMode.Open, FileAccess.Read))
                 {
                     using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
                     {
@@ -132,20 +183,15 @@ namespace Dorywcza.Controllers
 
             _emailProvider.Send(emailMessage);
         }
-
-        public IActionResult ExceptionAlert(string e)
-        {
-            return BadRequest(e);
-        }
         #endregion
         
-        // DELETE: api/Employees/1
-        [HttpDelete("{id}")]
-        public IActionResult DeleteEmployee(int id)
+        // DELETE: api/Employees/1/yes
+        [HttpDelete("{id}/{status}")]
+        public async Task<IActionResult> DeleteEmployee(int id, string status)
         {
             try
             {
-                var employee = _context.Employees.FirstOrDefault(a => a.EmployeeId == id);
+                var employee = await _context.Employees.FirstOrDefaultAsync(a => a.EmployeeId == id);
                 if (employee == null)
                 {
                     return NotFound();
@@ -153,7 +199,8 @@ namespace Dorywcza.Controllers
                 else
                 {
                     _context.Employees.Remove(employee);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
+                    SendBackEmail(employee, status);
                     return Ok("Data deleted");
                 }
             }
@@ -161,6 +208,58 @@ namespace Dorywcza.Controllers
             {
                 return BadRequest(e.Message);
             }
+        }
+
+        #region HttpDeleteEmployee Helper
+        private void SendBackEmail(Employee employee, string status)
+        {
+            var emailAddress = new EmailAddress(employee.Name, employee.Email);
+            var emailMessage = new EmailMessage();
+
+            try
+            {
+                emailMessage.FromAddresses.Add(new EmailAddress());
+                emailMessage.ToAddresses.Add(emailAddress);
+
+                if (status.Equals("yes"))
+                {
+                    emailMessage.Subject = "Zaakceptowano twoją prośbę o pracę";
+
+                    using (var fileStream = new FileStream(@"Services\EmailService\EmailText\EmailBackYesToEmployee.txt", FileMode.Open,
+                        FileAccess.Read))
+                    {
+                        using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
+                        {
+                            emailMessage.Content = streamReader.ReadToEnd();
+                        }
+                    }
+                }
+                else if (status.Equals("no"))
+                {
+                    emailMessage.Subject = "Odrzucono twoją prośbę o pracę";
+
+                    using (var fileStream = new FileStream(@"Services\EmailService\EmailText\EmailBackNoToEmployee.txt", FileMode.Open,
+                        FileAccess.Read))
+                    {
+                        using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
+                        {
+                            emailMessage.Content = streamReader.ReadToEnd();
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ExceptionAlert(e.Message);
+            }
+
+            _emailProvider.Send(emailMessage);
+        }
+        #endregion
+
+        public IActionResult ExceptionAlert(string e)
+        {
+            return BadRequest(e);
         }
     }
 }

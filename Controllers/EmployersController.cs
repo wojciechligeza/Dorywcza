@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Dorywcza.Data;
@@ -22,11 +23,12 @@ namespace Dorywcza.Controllers
 
          // GET: api/Employers
         [HttpGet]
-        public IActionResult GetEmployers()
+        public async Task<IActionResult> GetEmployers()
         {
             try
             {
-                var employers = _context.Employers.ToList();
+                var employers = await _context.Employers
+                    .Include(a => a.JobOffers).ToListAsync();
                 return Ok(employers);
             }
             catch (Exception e)
@@ -37,11 +39,12 @@ namespace Dorywcza.Controllers
 
         // GET: api/Employers/1
         [HttpGet("{id}")]
-        public IActionResult GetEmployer(int id)
+        public async Task<IActionResult> GetEmployer(int id)
         {
             try
             {
-                var employer = _context.Employers.FirstOrDefault(a => a.EmployerId == id);
+                var employer = await _context.Employers
+                    .Include(a => a.JobOffers).FirstOrDefaultAsync(a => a.EmployerId == id);
 
                 if (employer == null)
                 {
@@ -57,7 +60,7 @@ namespace Dorywcza.Controllers
 
         // PUT: api/Employers/1
         [HttpPut("{id}")]
-        public IActionResult PutEmployer(int id, [FromBody]Employer employer)
+        public async Task<IActionResult> PutEmployer(int id, [FromBody]Employer employer)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             if (id != employer.EmployerId) return BadRequest();
@@ -71,7 +74,7 @@ namespace Dorywcza.Controllers
                 else
                 {
                     _context.Entry(employer).State = EntityState.Modified;
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                     return Ok("Data updated");
                 }
             }
@@ -83,14 +86,14 @@ namespace Dorywcza.Controllers
 
         // POST: api/Employers
         [HttpPost]
-        public IActionResult PostEmployer([FromBody]Employer employer)
+        public async Task<IActionResult> PostEmployer([FromBody]Employer employer)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             try
             {
                 _context.Employers.Add(employer);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return Ok("Data created");
             }
             catch (Exception e)
@@ -101,11 +104,11 @@ namespace Dorywcza.Controllers
 
         // DELETE: api/Employers/1
         [HttpDelete("{id}")]
-        public IActionResult DeleteEmployer(int id)
+        public async Task<IActionResult> DeleteEmployer(int id)
         {
             try
             {
-                var employer = _context.Employers.FirstOrDefault(a => a.EmployerId == id);
+                var employer = await _context.Employers.FirstOrDefaultAsync(a => a.EmployerId == id);
                 if (employer == null)
                 {
                     return NotFound();
@@ -113,7 +116,7 @@ namespace Dorywcza.Controllers
                 else
                 {
                     _context.Employers.Remove(employer);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                     return Ok("Data deleted");
                 }
             }

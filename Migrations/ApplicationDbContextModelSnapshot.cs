@@ -4,7 +4,6 @@ using Dorywcza.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Dorywcza.Migrations
 {
@@ -18,6 +17,42 @@ namespace Dorywcza.Migrations
                 .HasAnnotation("ProductVersion", "3.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("Dorywcza.Models.Auth.User", b =>
+                {
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("PasswordHash")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            FirstName = "admin",
+                            LastName = "admin",
+                            Username = "admin"
+                        });
+                });
 
             modelBuilder.Entity("Dorywcza.Models.Category", b =>
                 {
@@ -137,7 +172,13 @@ namespace Dorywcza.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("EmployerId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Employers");
 
@@ -146,7 +187,8 @@ namespace Dorywcza.Migrations
                         {
                             EmployerId = 1,
                             CompanyName = "ConstructNext",
-                            Description = "Zajmujemy się budową obiektów różnego przeznaczenia"
+                            Description = "Zajmujemy się budową obiektów różnego przeznaczenia",
+                            UserId = 1
                         });
                 });
 
@@ -163,16 +205,13 @@ namespace Dorywcza.Migrations
                     b.Property<int>("AmountOfPlaces")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmployerId")
+                    b.Property<int>("EmployerId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -194,8 +233,6 @@ namespace Dorywcza.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("EmployeeId");
-
                     b.HasIndex("EmployerId");
 
                     b.ToTable("JobOffers");
@@ -204,11 +241,10 @@ namespace Dorywcza.Migrations
                         new
                         {
                             JobOfferId = 1,
-                            AddDate = new DateTime(2019, 12, 27, 0, 0, 0, 0, DateTimeKind.Local),
+                            AddDate = new DateTime(2020, 1, 10, 0, 0, 0, 0, DateTimeKind.Local),
                             AmountOfPlaces = 1,
                             CategoryId = 1,
                             Description = "Praca na budowie sklepu spożywczego w 5-osobowym zespole",
-                            EmployeeId = 1,
                             EmployerId = 1,
                             Name = "Praca budowlana na Zawodziu",
                             QualificationIsRequired = false,
@@ -218,19 +254,65 @@ namespace Dorywcza.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Dorywcza.Models.JobOfferEmployee", b =>
+                {
+                    b.Property<int>("JobOfferId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("JobOfferId", "EmployeeId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("JobOfferEmployees");
+
+                    b.HasData(
+                        new
+                        {
+                            JobOfferId = 1,
+                            EmployeeId = 1
+                        });
+                });
+
+            modelBuilder.Entity("Dorywcza.Models.Employer", b =>
+                {
+                    b.HasOne("Dorywcza.Models.Auth.User", null)
+                        .WithOne("Employer")
+                        .HasForeignKey("Dorywcza.Models.Employer", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Dorywcza.Models.JobOffer", b =>
                 {
-                    b.HasOne("Dorywcza.Models.Category", "category")
+                    b.HasOne("Dorywcza.Models.Category", "Category")
                         .WithMany("JobOffers")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Dorywcza.Models.Employee", "employee")
+                    b.HasOne("Dorywcza.Models.Employer", "Employer")
                         .WithMany("JobOffers")
-                        .HasForeignKey("EmployeeId");
+                        .HasForeignKey("EmployerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                    b.HasOne("Dorywcza.Models.Employer", "employer")
-                        .WithMany("JobOffers")
-                        .HasForeignKey("EmployerId");
+            modelBuilder.Entity("Dorywcza.Models.JobOfferEmployee", b =>
+                {
+                    b.HasOne("Dorywcza.Models.Employee", "Employee")
+                        .WithMany("JobOfferEmployees")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Dorywcza.Models.JobOffer", "JobOffer")
+                        .WithMany("JobOfferEmployees")
+                        .HasForeignKey("JobOfferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

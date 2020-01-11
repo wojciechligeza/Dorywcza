@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Dorywcza.Services.EmailService.Helpers;
 using MailKit.Net.Pop3;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;

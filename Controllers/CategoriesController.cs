@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Dorywcza.Data;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.EntityFrameworkCore;
 
 namespace Dorywcza.Controllers
 {
@@ -20,12 +21,14 @@ namespace Dorywcza.Controllers
 
         // GET: api/Categories
         [HttpGet]
-        public IActionResult GetCategories()
+        public async Task<IActionResult> GetCategories()
         {
             try
             {
-                var category = _context.Categories.ToList();
-                return Ok(category);
+                var categories = await _context.Categories
+                    .Include(a => a.JobOffers).ToListAsync();
+
+                return Ok(categories);
             }
             catch (Exception e)
             {
@@ -35,11 +38,12 @@ namespace Dorywcza.Controllers
 
         // GET: api/Categories/1
         [HttpGet("{id}")]
-        public IActionResult GetCategory(int id)
+        public async Task<IActionResult> GetCategory(int id)
         {
             try
             {
-                var category = _context.Categories.FirstOrDefault(a => a.CategoryId == id);
+                var category = await _context.Categories
+                    .Include(a => a.JobOffers).FirstOrDefaultAsync(a => a.CategoryId == id);
 
                 if (category == null)
                 {

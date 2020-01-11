@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Dorywcza.Services.EmailService
+namespace Dorywcza.Services.EmailService.Helpers
 {
     public class EmailMessage
     {

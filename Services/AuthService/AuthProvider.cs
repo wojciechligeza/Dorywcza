@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Dorywcza.Data;
+using Dorywcza.Models;
 using Dorywcza.Models.Auth;
 using Dorywcza.Services.AuthService.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Dorywcza.Services.AuthService
 {
@@ -16,13 +19,13 @@ namespace Dorywcza.Services.AuthService
             _context = context;
         }
 
-        public User AuthenticateUser(string username, string password)
+        public async Task<User> AuthenticateUser(string username, string password)
         {
             // checking if username or password are not empty
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password)) return null;
 
             // fetching username from database
-            var user = _context.Users.SingleOrDefault(a => a.Username == username);
+            var user = await _context.Users.SingleOrDefaultAsync(a => a.Username == username);
 
             // checking if username exists
             if (user == null) return null;
@@ -34,7 +37,7 @@ namespace Dorywcza.Services.AuthService
             return user;
         }
 
-        public User PostUser(User user, string password)
+        public async Task<User> RegisterUser(User user, string password)
         {
             if (string.IsNullOrWhiteSpace(password)) throw new AppException("Hasło jest wymagane");
 
@@ -46,56 +49,72 @@ namespace Dorywcza.Services.AuthService
 
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
-            #endregion
+            #endregion 
             
             _context.Users.Add(user);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            // adding User as Employer
+            Employer employer = new Employer()
+            {
+                CompanyName = user.Username,
+                Description = "",
+                UserId = _context.Users.Max(a => a.UserId)
+            };
+             _context.Employers.Add(employer);
+             await _context.SaveChangesAsync();
 
             return user;
         }
 
-        public IEnumerable<User> GetUsers()
+        public async Task<IEnumerable<User>> GetUsers()
         {
-            return _context.Users.ToList();
+            return await _context.Users.ToListAsync();
         }
 
-        public User GetUser(int id)
+        public async Task<User> GetUser(int id)
         {
-            return _context.Users.FirstOrDefault(a => a.UserId == id);
+            return await _context.Users.FirstOrDefaultAsync(a => a.UserId == id);
         }
 
-        public void PutUser(User userParam, string password = null)
+        public async Task PutUser(User userParam, string password = null)
         {
-            var user = _context.Users.FirstOrDefault(a => a.UserId == userParam.UserId);
+            var user = await _context.Users.FirstOrDefaultAsync(a => a.UserId == userParam.UserId);
 
-            if (!string.IsNullOrWhiteSpace(userParam.Username) && userParam.Username != user.Username) user.Username = userParam.Username;
-
-            if (!string.IsNullOrWhiteSpace(userParam.FirstName)) user.FirstName = userParam.FirstName;
-
-            if (!string.IsNullOrWhiteSpace(userParam.LastName)) user.LastName = userParam.LastName;
-
-            #region Update Salted Password Hasing
-            if (!string.IsNullOrWhiteSpace(password))
+            if (user != null)
             {
-                byte[] passwordHash, passwordSalt;
-                CreatePasswordHash(password, out passwordHash, out passwordSalt);
+                if (!string.IsNullOrWhiteSpace(userParam.Username) && userParam.Username != user.Username)
+                    user.Username = userParam.Username;
 
-                user.PasswordHash = passwordHash;
-                user.PasswordSalt = passwordSalt;
+                if (!string.IsNullOrWhiteSpace(userParam.FirstName)) user.FirstName = userParam.FirstName;
+
+                if (!string.IsNullOrWhiteSpace(userParam.LastName)) user.LastName = userParam.LastName;
+
+                #region Update Salted Password Hasing
+                if (!string.IsNullOrWhiteSpace(password))
+                {
+                    byte[] passwordHash, passwordSalt;
+                    CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
+
+                    user.PasswordHash = passwordHash;
+                    user.PasswordSalt = passwordSalt;
+
+                }
+                #endregion
+
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
             }
-            #endregion
-            
-            _context.Users.Update(user);
-            _context.SaveChanges();
         }
 
-        public void DeleteUser(int id)
+        public async Task DeleteUser(int id)
         {
-            var user = _context.Users.FirstOrDefault(a => a.UserId == id);
+            var user = await _context.Users.FirstOrDefaultAsync(a => a.UserId == id);
             if (user != null)
             {
                 _context.Users.Remove(user);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
@@ -116,8 +135,8 @@ namespace Dorywcza.Services.AuthService
         {
             if (password == null) throw new ArgumentNullException("password");
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("VWartość nie może być pusta", "password");
-            if (storedHash.Length != 64) throw new ArgumentException("Niepoprawna wielkość bajtowa password hash (spodziewane 64 bajty)", "passwordHash");
-            if (storedSalt.Length != 128) throw new ArgumentException("Niepoprawna wielkość bajtowa password salt (spodziewane 128 bajtów)", "passwordHash");
+            if (storedHash.Length != 64) throw new ArgumentException("Niepoprawna wielkość bajtowa password hash (spodziewane 64 bajty)", "storedHash");
+            if (storedSalt.Length != 128) throw new ArgumentException("Niepoprawna wielkość bajtowa password salt (spodziewane 128 bajtów)", "storedSalt");
 
             using (var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt))
             {

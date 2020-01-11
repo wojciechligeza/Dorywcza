@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Dorywcza.Services.EmailService.Helpers;
 
 namespace Dorywcza.Services.EmailService
 {

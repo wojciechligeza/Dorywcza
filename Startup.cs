@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Dorywcza.Data;
 using Dorywcza.Services.AuthService;
+using Dorywcza.Services.AuthService.Helpers;
 using Dorywcza.Services.EmailService;
+using Dorywcza.Services.EmailService.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +30,8 @@ namespace Dorywcza
         public void ConfigureServices(IServiceCollection services)
         {
             // To receiving data in format JSON with proper parsing NewtonsoftJson added
-            services.AddControllers().AddNewtonsoftJson();
+            services.AddControllers().AddNewtonsoftJson(options => 
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             // Adding Connection String and Database Provider to context
             services.AddDbContext<ApplicationDbContext>(options =>

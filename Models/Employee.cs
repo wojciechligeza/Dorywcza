@@ -28,6 +28,24 @@ namespace Dorywcza.Models
         public string Comment { get; set; }
         [Required]
         public bool AgreementRodo { get; set; }
-        public virtual ICollection<JobOffer> JobOffers { get; set; }
+
+        public List<JobOfferEmployee> JobOfferEmployees { get; set; }
+
+        public List<JobOffer> JobOffers()
+        {
+            var jobOffers = new List<JobOffer>();
+
+            foreach (var join in JobOfferEmployees)
+            {
+                jobOffers.Add(join.JobOffer);
+            }
+
+            return jobOffers;
+        }
+
+        public Employee()
+        {
+            JobOfferEmployees = new List<JobOfferEmployee>();
+        }
     }
 }
