@@ -257,6 +257,8 @@ namespace Dorywcza.Controllers
         }
         #endregion
 
+        // GET: api/Employees/error
+        [HttpGet("error")]
         public IActionResult ExceptionAlert(string e)
         {
             return BadRequest(e);
