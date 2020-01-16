@@ -1,0 +1,8 @@
+﻿<h3>Prośba o oferte pracy</h3>
+<br>
+<p>Szanowny Kliencie, <br>
+Niestety pracodawca odrzucił twoją prośbę. Ale nie przejmuj się, są jeszcze inne oferty pracy ;)</p>
+<br>
+<h4>Z wyrazami szacunku,<h4>
+<br>
+Zespół <i>Dorywcza.pl</i>

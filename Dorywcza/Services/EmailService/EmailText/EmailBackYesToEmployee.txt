@@ -1,0 +1,8 @@
+﻿<h3>Gratulacje</h3>
+<br>
+<p>Szanowny Kliencie, <br>
+Pracodawca przyjął twoją prośbę. Teraz tylko stawić się na umówione miejsce o umówionym czasie i patrzeć jak kasa przypływa na konto :)</p>
+<br>
+<h4>Z wyrazami szacunku,<h4>
+<br>
+Zespół <i>Dorywcza.pl</i>
