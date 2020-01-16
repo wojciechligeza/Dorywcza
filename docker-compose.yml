@@ -2,7 +2,20 @@ version: '3.4'
 
 services:
   dorywcza:
-    image: ${DOCKER_REGISTRY-}dorywcza
-    build:
-      context: .
-      dockerfile: Dorywcza/Dockerfile
+        image: dorywcza/api
+        container_name: dorywcza-api
+        build:
+            context: .
+            dockerfile: Dorywcza/Dockerfile
+        ports:
+            - "8080:80"
+        depends_on:
+            - db
+  db:
+        image: "mcr.microsoft.com/mssql/server:2017-latest"
+        container_name: dorywcza-db
+        environment:
+            SA_PASSWORD: "/"
+            ACCEPT_EULA: "Y"
+        ports:
+            - "1433:1433"
