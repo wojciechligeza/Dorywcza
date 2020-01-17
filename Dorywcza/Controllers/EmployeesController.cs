@@ -168,13 +168,11 @@ namespace Dorywcza.Controllers
                 emailMessage.ToAddresses.Add(emailAddress);
                 emailMessage.Subject = "Praca";
 
-                using (var fileStream = new FileStream(@"Services\EmailService\EmailText\EmailToEmployee.txt", FileMode.Open, FileAccess.Read))
-                {
-                    using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
-                    {
-                        emailMessage.Content = streamReader.ReadToEnd();
-                    }
-                }
+                string filePath = @"Services\EmailService\EmailText\EmailToEmployee.txt";
+                using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
+
+                emailMessage.Content = streamReader.ReadToEnd();
             }
             catch (Exception e)
             {
@@ -225,25 +223,21 @@ namespace Dorywcza.Controllers
                 {
                     emailMessage.Subject = "Zaakceptowano twoją prośbę o pracę";
 
-                    using (var fileStream = new FileStream(@"Services\EmailService\EmailText\EmailBackYesToEmployee.txt", FileMode.Open, FileAccess.Read))
-                    {
-                        using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
-                        {
-                            emailMessage.Content = streamReader.ReadToEnd();
-                        }
-                    }
+                    string pathFile1 = @"Services\EmailService\EmailText\EmailBackYesToEmployee.txt";
+                    using var fileStream = new FileStream(pathFile1, FileMode.Open, FileAccess.Read);
+                    using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
+
+                    emailMessage.Content = streamReader.ReadToEnd();
                 }
                 else if (status.Equals("no"))
                 {
                     emailMessage.Subject = "Odrzucono twoją prośbę o pracę";
 
-                    using (var fileStream = new FileStream(@"Services\EmailService\EmailText\EmailBackNoToEmployee.txt", FileMode.Open, FileAccess.Read))
-                    {
-                        using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
-                        {
-                            emailMessage.Content = streamReader.ReadToEnd();
-                        }
-                    }
+                    string pathFile2 = @"Services\EmailService\EmailText\EmailBackNoToEmployee.txt";
+                    using var fileStream = new FileStream(pathFile2, FileMode.Open, FileAccess.Read);
+                    using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
+
+                    emailMessage.Content = streamReader.ReadToEnd();
                 }
             }
             catch (Exception e)
