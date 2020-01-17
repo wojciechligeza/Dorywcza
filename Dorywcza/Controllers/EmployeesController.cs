@@ -139,14 +139,14 @@ namespace Dorywcza.Controllers
 
         // POST: api/Employees
         [HttpPost]
-        public async Task<IActionResult> PostEmployee([FromBody]Employee employee)
+        public IActionResult PostEmployee([FromBody]Employee employee)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             try
             {
                 _context.Employees.Add(employee);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
                 SendFirstEmail(employee);
                 return Ok("Data created");
             }
@@ -187,11 +187,11 @@ namespace Dorywcza.Controllers
         
         // DELETE: api/Employees/1/yes
         [HttpDelete("{id}/{status}")]
-        public async Task<IActionResult> DeleteEmployee(int id, string status)
+        public IActionResult DeleteEmployee(int id, string status)
         {
             try
             {
-                var employee = await _context.Employees.FirstOrDefaultAsync(a => a.EmployeeId == id);
+                var employee = _context.Employees.FirstOrDefault(a => a.EmployeeId == id);
                 if (employee == null)
                 {
                     return NotFound();
@@ -199,7 +199,7 @@ namespace Dorywcza.Controllers
                 else
                 {
                     _context.Employees.Remove(employee);
-                    await _context.SaveChangesAsync();
+                    _context.SaveChanges();
                     SendBackEmail(employee, status);
                     return Ok("Data deleted");
                 }
@@ -225,8 +225,7 @@ namespace Dorywcza.Controllers
                 {
                     emailMessage.Subject = "Zaakceptowano twoją prośbę o pracę";
 
-                    using (var fileStream = new FileStream(@"Services\EmailService\EmailText\EmailBackYesToEmployee.txt", FileMode.Open,
-                        FileAccess.Read))
+                    using (var fileStream = new FileStream(@"Services\EmailService\EmailText\EmailBackYesToEmployee.txt", FileMode.Open, FileAccess.Read))
                     {
                         using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
                         {
@@ -238,8 +237,7 @@ namespace Dorywcza.Controllers
                 {
                     emailMessage.Subject = "Odrzucono twoją prośbę o pracę";
 
-                    using (var fileStream = new FileStream(@"Services\EmailService\EmailText\EmailBackNoToEmployee.txt", FileMode.Open,
-                        FileAccess.Read))
+                    using (var fileStream = new FileStream(@"Services\EmailService\EmailText\EmailBackNoToEmployee.txt", FileMode.Open, FileAccess.Read))
                     {
                         using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
                         {
@@ -259,9 +257,9 @@ namespace Dorywcza.Controllers
 
         // GET: api/Employees/error
         [HttpGet("error")]
-        public IActionResult ExceptionAlert(string e)
+        public IActionResult ExceptionAlert(string error)
         {
-            return BadRequest(e);
+            return BadRequest(error);
         }
     }
 }
