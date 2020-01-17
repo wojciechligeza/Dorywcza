@@ -37,12 +37,12 @@ namespace Dorywcza.Services.EmailService
             // SmtpClient from MailKit.Net.Smtp
             using (var emailClient = new SmtpClient())
             {
-                emailClient.Connect("smtp.gmail.com", 465, true);
+                emailClient.Connect("smtp.office365.com", 587, true);
 
                 // Remove any OAuth functionality as we won't be using it.
                 emailClient.AuthenticationMechanisms.Remove("XOAUTH2");
 
-                emailClient.Authenticate("covalig.ligese@gmail.com", "hankazmagda");
+                emailClient.Authenticate("wojciech.ligeza@o365.us.edu.pl", "pop5da3hip7new!");
 
                 emailClient.Send(message);
 
