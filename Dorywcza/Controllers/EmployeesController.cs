@@ -139,15 +139,15 @@ namespace Dorywcza.Controllers
 
         // POST: api/Employees
         [HttpPost]
-        public IActionResult PostEmployee([FromBody]Employee employee)
+        public async Task<IActionResult> PostEmployee([FromBody]Employee employee)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             try
             {
                 _context.Employees.Add(employee);
-                _context.SaveChanges();
-                SendFirstEmail(employee);
+                await _context.SaveChangesAsync();
+                await SendFirstEmail(employee);
                 return Ok("Data created");
             }
             catch (Exception e)
@@ -157,7 +157,7 @@ namespace Dorywcza.Controllers
         }
 
         #region HttpPostEmployee Helper
-        private void SendFirstEmail(Employee employee)
+        private async Task SendFirstEmail(Employee employee)
         {
             var emailAddress = new EmailAddress(employee.Name, employee.Email);
             var emailMessage = new EmailMessage();
@@ -179,17 +179,17 @@ namespace Dorywcza.Controllers
                 ExceptionAlert(e.Message);
             }
 
-            _emailProvider.Send(emailMessage);
+            await _emailProvider.Send(emailMessage);
         }
         #endregion
         
         // DELETE: api/Employees/1/yes
         [HttpDelete("{id}/{status}")]
-        public IActionResult DeleteEmployee(int id, string status)
+        public async Task<IActionResult> DeleteEmployee(int id, string status)
         {
             try
             {
-                var employee = _context.Employees.FirstOrDefault(a => a.EmployeeId == id);
+                var employee = await _context.Employees.FirstOrDefaultAsync(a => a.EmployeeId == id);
                 if (employee == null)
                 {
                     return NotFound();
@@ -197,8 +197,8 @@ namespace Dorywcza.Controllers
                 else
                 {
                     _context.Employees.Remove(employee);
-                    _context.SaveChanges();
-                    SendBackEmail(employee, status);
+                    await _context.SaveChangesAsync();
+                    await SendBackEmail(employee, status);
                     return Ok("Data deleted");
                 }
             }
@@ -209,7 +209,7 @@ namespace Dorywcza.Controllers
         }
 
         #region HttpDeleteEmployee Helper
-        private void SendBackEmail(Employee employee, string status)
+        private async Task SendBackEmail(Employee employee, string status)
         {
             var emailAddress = new EmailAddress(employee.Name, employee.Email);
             var emailMessage = new EmailMessage();
@@ -245,7 +245,7 @@ namespace Dorywcza.Controllers
                 ExceptionAlert(e.Message);
             }
 
-            _emailProvider.Send(emailMessage);
+            await _emailProvider.Send(emailMessage);
         }
         #endregion
 

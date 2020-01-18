@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Dorywcza.Services.EmailService.Helpers;
 using MailKit.Net.Pop3;
 using MailKit.Net.Smtp;
@@ -18,7 +19,7 @@ namespace Dorywcza.Services.EmailService
             _emailConfiguration = emailConfiguration.Value;
         }
 
-        public void Send(EmailMessage emailMessage)
+        public async Task Send(EmailMessage emailMessage)
         {
             var message = new MimeMessage();
 
@@ -37,34 +38,34 @@ namespace Dorywcza.Services.EmailService
             // SmtpClient from MailKit.Net.Smtp
             using (var emailClient = new SmtpClient())
             {
-                emailClient.Connect("smtp.office365.com", 587, true);
+                await emailClient.ConnectAsync("smtp.sendgrid.net", 587, false);
 
                 // Remove any OAuth functionality as we won't be using it.
                 emailClient.AuthenticationMechanisms.Remove("XOAUTH2");
 
-                emailClient.Authenticate("wojciech.ligeza@o365.us.edu.pl", "pop5da3hip7new!");
+                await emailClient.AuthenticateAsync("apikey", "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");
 
-                emailClient.Send(message);
+                await emailClient.SendAsync(message);
 
-                emailClient.Disconnect(true);
+                await emailClient.DisconnectAsync(true);
             }
         }
 
-        public List<EmailMessage> ReceiveEmail(int maxCount = 10)
+        public async Task<List<EmailMessage>> ReceiveEmail(int maxCount = 10)
         {
             using (var emailClient = new Pop3Client())
             {
-                emailClient.Connect(_emailConfiguration.PopServer, _emailConfiguration.PopPort, true);
+                await emailClient.ConnectAsync(_emailConfiguration.PopServer, _emailConfiguration.PopPort, true);
  
                 emailClient.AuthenticationMechanisms.Remove("XOAUTH2");
  
-                emailClient.Authenticate(_emailConfiguration.PopUsername, _emailConfiguration.PopPassword);
+                await emailClient.AuthenticateAsync(_emailConfiguration.PopUsername, _emailConfiguration.PopPassword);
  
                 List<EmailMessage> emails = new List<EmailMessage>();
 
                 for(int i=0; i < emailClient.Count && i < maxCount; i++)
                 {
-                    var message = emailClient.GetMessage(i);
+                    var message = await emailClient.GetMessageAsync(i);
 
                     var emailMessage = new EmailMessage
                     {
