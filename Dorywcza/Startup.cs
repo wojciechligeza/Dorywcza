@@ -106,7 +106,7 @@ namespace Dorywcza
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:4200")
+                        builder.WithOrigins("https://dorywcza-client.azurewebsites.net")
                             .AllowAnyHeader()
                             .AllowAnyMethod();
                     });
@@ -114,7 +114,7 @@ namespace Dorywcza
                 options.AddPolicy("GetOnly", 
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:4200")
+                        builder.WithOrigins("https://dorywcza-client.azurewebsites.net")
                             .AllowAnyHeader()
                             .WithMethods("GET");
                     });
