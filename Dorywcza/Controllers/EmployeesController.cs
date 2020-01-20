@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Dorywcza.Data;
 using Dorywcza.Models;
 using Dorywcza.Services.EmailService;
+using Dorywcza.Services.EmailService.EmailText;
 using Dorywcza.Services.EmailService.Helpers;
 using Microsoft.AspNetCore.Cors;
 
@@ -20,6 +21,8 @@ namespace Dorywcza.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IEmailProvider _emailProvider;
+
+        private const bool production = true;
 
         public EmployeesController(ApplicationDbContext context, IEmailProvider emailProvider)
         {
@@ -168,11 +171,19 @@ namespace Dorywcza.Controllers
                 emailMessage.ToAddresses.Add(emailAddress);
                 emailMessage.Subject = "Praca";
 
-                string filePath = @"Services\EmailService\EmailText\EmailToEmployee.txt";
-                using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
+                if (production)
+                {
+                    emailMessage.Content = EmailText.EmailToEmployee;
+                }
+                else
+                {
+                    const string filePath = @"Services\EmailService\EmailText\EmailToEmployee.txt";
+                    using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                    using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
 
-                emailMessage.Content = streamReader.ReadToEnd();
+                    emailMessage.Content = streamReader.ReadToEnd();
+                }
+                
             }
             catch (Exception e)
             {
@@ -223,21 +234,35 @@ namespace Dorywcza.Controllers
                 {
                     emailMessage.Subject = "Zaakceptowano twoją prośbę o pracę";
 
-                    string pathFile1 = @"Services\EmailService\EmailText\EmailBackYesToEmployee.txt";
-                    using var fileStream = new FileStream(pathFile1, FileMode.Open, FileAccess.Read);
-                    using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
+                    if (production)
+                    {
+                        emailMessage.Content = EmailText.EmailBackYesToEmployee;
+                    }
+                    else
+                    {
+                        const string pathFile1 = @"Services\EmailService\EmailText\EmailBackYesToEmployee.txt";
+                        using var fileStream = new FileStream(pathFile1, FileMode.Open, FileAccess.Read);
+                        using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
 
-                    emailMessage.Content = streamReader.ReadToEnd();
+                        emailMessage.Content = streamReader.ReadToEnd();
+                    }
                 }
                 else if (status.Equals("no"))
                 {
                     emailMessage.Subject = "Odrzucono twoją prośbę o pracę";
 
-                    string pathFile2 = @"Services\EmailService\EmailText\EmailBackNoToEmployee.txt";
-                    using var fileStream = new FileStream(pathFile2, FileMode.Open, FileAccess.Read);
-                    using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
+                    if (production)
+                    {
+                        emailMessage.Content = EmailText.EmailBackNoToEmployee;
+                    }
+                    else
+                    {
+                        const string pathFile2 = @"Services\EmailService\EmailText\EmailBackNoToEmployee.txt";
+                        using var fileStream = new FileStream(pathFile2, FileMode.Open, FileAccess.Read);
+                        using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
 
-                    emailMessage.Content = streamReader.ReadToEnd();
+                        emailMessage.Content = streamReader.ReadToEnd();
+                    }
                 }
             }
             catch (Exception e)
