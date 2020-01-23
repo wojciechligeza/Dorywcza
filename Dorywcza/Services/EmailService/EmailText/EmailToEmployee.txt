@@ -1,0 +1,8 @@
+﻿<h3>Formularz oferty pracy</h3>
+<br>
+<p>Szanowny Kliencie, <br>
+Twój formularz został wysłany. Proszę czekać na wiadomość od pracodawcy.</p>
+<br>
+<h4>Z wyrazami szacunku,<h4>
+<br>
+Zespół <i>Dorywcza.pl</i>
