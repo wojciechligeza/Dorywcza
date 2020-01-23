@@ -43,7 +43,7 @@ namespace Dorywcza.Services.EmailService
                 // Remove any OAuth functionality as we won't be using it.
                 emailClient.AuthenticationMechanisms.Remove("XOAUTH2");
 
-                await emailClient.AuthenticateAsync("apikey", "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");
+                await emailClient.AuthenticateAsync(_emailConfiguration.SmtpUsername, _emailConfiguration.SmtpPassword);
 
                 await emailClient.SendAsync(message);
 
