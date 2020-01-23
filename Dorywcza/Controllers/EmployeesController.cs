@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Dorywcza.Data;
 using Dorywcza.Models;
 using Dorywcza.Services.EmailService;
+using Dorywcza.Services.EmailService.EmailText;
 using Dorywcza.Services.EmailService.Helpers;
 using Microsoft.AspNetCore.Cors;
 
@@ -20,6 +21,8 @@ namespace Dorywcza.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IEmailProvider _emailProvider;
+
+        private const bool production = true;
 
         public EmployeesController(ApplicationDbContext context, IEmailProvider emailProvider)
         {
@@ -147,7 +150,7 @@ namespace Dorywcza.Controllers
             {
                 _context.Employees.Add(employee);
                 await _context.SaveChangesAsync();
-                SendFirstEmail(employee);
+                await SendFirstEmail(employee);
                 return Ok("Data created");
             }
             catch (Exception e)
@@ -157,7 +160,7 @@ namespace Dorywcza.Controllers
         }
 
         #region HttpPostEmployee Helper
-        private void SendFirstEmail(Employee employee)
+        private async Task SendFirstEmail(Employee employee)
         {
             var emailAddress = new EmailAddress(employee.Name, employee.Email);
             var emailMessage = new EmailMessage();
@@ -168,20 +171,26 @@ namespace Dorywcza.Controllers
                 emailMessage.ToAddresses.Add(emailAddress);
                 emailMessage.Subject = "Praca";
 
-                using (var fileStream = new FileStream(@"Services\EmailService\EmailText\EmailToEmployee.txt", FileMode.Open, FileAccess.Read))
+                if (production)
                 {
-                    using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
-                    {
-                        emailMessage.Content = streamReader.ReadToEnd();
-                    }
+                    emailMessage.Content = EmailText.EmailToEmployee;
                 }
+                else
+                {
+                    const string filePath = @"Services\EmailService\EmailText\EmailToEmployee.txt";
+                    using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                    using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
+
+                    emailMessage.Content = streamReader.ReadToEnd();
+                }
+                
             }
             catch (Exception e)
             {
                 ExceptionAlert(e.Message);
             }
 
-            _emailProvider.Send(emailMessage);
+            await _emailProvider.Send(emailMessage);
         }
         #endregion
         
@@ -200,7 +209,7 @@ namespace Dorywcza.Controllers
                 {
                     _context.Employees.Remove(employee);
                     await _context.SaveChangesAsync();
-                    SendBackEmail(employee, status);
+                    await SendBackEmail(employee, status);
                     return Ok("Data deleted");
                 }
             }
@@ -211,7 +220,7 @@ namespace Dorywcza.Controllers
         }
 
         #region HttpDeleteEmployee Helper
-        private void SendBackEmail(Employee employee, string status)
+        private async Task SendBackEmail(Employee employee, string status)
         {
             var emailAddress = new EmailAddress(employee.Name, employee.Email);
             var emailMessage = new EmailMessage();
@@ -225,26 +234,34 @@ namespace Dorywcza.Controllers
                 {
                     emailMessage.Subject = "Zaakceptowano twoją prośbę o pracę";
 
-                    using (var fileStream = new FileStream(@"Services\EmailService\EmailText\EmailBackYesToEmployee.txt", FileMode.Open,
-                        FileAccess.Read))
+                    if (production)
                     {
-                        using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
-                        {
-                            emailMessage.Content = streamReader.ReadToEnd();
-                        }
+                        emailMessage.Content = EmailText.EmailBackYesToEmployee;
+                    }
+                    else
+                    {
+                        const string pathFile1 = @"Services\EmailService\EmailText\EmailBackYesToEmployee.txt";
+                        using var fileStream = new FileStream(pathFile1, FileMode.Open, FileAccess.Read);
+                        using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
+
+                        emailMessage.Content = streamReader.ReadToEnd();
                     }
                 }
                 else if (status.Equals("no"))
                 {
                     emailMessage.Subject = "Odrzucono twoją prośbę o pracę";
 
-                    using (var fileStream = new FileStream(@"Services\EmailService\EmailText\EmailBackNoToEmployee.txt", FileMode.Open,
-                        FileAccess.Read))
+                    if (production)
                     {
-                        using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
-                        {
-                            emailMessage.Content = streamReader.ReadToEnd();
-                        }
+                        emailMessage.Content = EmailText.EmailBackNoToEmployee;
+                    }
+                    else
+                    {
+                        const string pathFile2 = @"Services\EmailService\EmailText\EmailBackNoToEmployee.txt";
+                        using var fileStream = new FileStream(pathFile2, FileMode.Open, FileAccess.Read);
+                        using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
+
+                        emailMessage.Content = streamReader.ReadToEnd();
                     }
                 }
             }
@@ -253,15 +270,15 @@ namespace Dorywcza.Controllers
                 ExceptionAlert(e.Message);
             }
 
-            _emailProvider.Send(emailMessage);
+            await _emailProvider.Send(emailMessage);
         }
         #endregion
 
         // GET: api/Employees/error
         [HttpGet("error")]
-        public IActionResult ExceptionAlert(string e)
+        public IActionResult ExceptionAlert(string error)
         {
-            return BadRequest(e);
+            return BadRequest(error);
         }
     }
 }

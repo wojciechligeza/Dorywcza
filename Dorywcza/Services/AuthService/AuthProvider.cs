@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Dorywcza.Data;
 using Dorywcza.Models;
 using Dorywcza.Models.Auth;
 using Dorywcza.Services.AuthService.Helpers;
-using Microsoft.EntityFrameworkCore;
 
 namespace Dorywcza.Services.AuthService
 {
@@ -19,13 +17,13 @@ namespace Dorywcza.Services.AuthService
             _context = context;
         }
 
-        public async Task<User> AuthenticateUser(string username, string password)
+        public User AuthenticateUser(string username, string password)
         {
             // checking if username or password are not empty
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password)) return null;
 
             // fetching username from database
-            var user = await _context.Users.SingleOrDefaultAsync(a => a.Username == username);
+            var user = _context.Users.SingleOrDefault(a => a.Username == username);
 
             // checking if username exists
             if (user == null) return null;
@@ -37,7 +35,7 @@ namespace Dorywcza.Services.AuthService
             return user;
         }
 
-        public async Task<User> RegisterUser(User user, string password)
+        public User RegisterUser(User user, string password)
         {
             if (string.IsNullOrWhiteSpace(password)) throw new AppException("Hasło jest wymagane");
 
@@ -52,7 +50,7 @@ namespace Dorywcza.Services.AuthService
             #endregion 
             
             _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             // adding User as Employer
             Employer employer = new Employer()
@@ -62,24 +60,24 @@ namespace Dorywcza.Services.AuthService
                 UserId = _context.Users.Max(a => a.UserId)
             };
              _context.Employers.Add(employer);
-             await _context.SaveChangesAsync();
+             _context.SaveChanges();
 
             return user;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public IEnumerable<User> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            return _context.Users.ToList();
         }
 
-        public async Task<User> GetUser(int id)
+        public User GetUser(int id)
         {
-            return await _context.Users.FirstOrDefaultAsync(a => a.UserId == id);
+            return _context.Users.FirstOrDefault(a => a.UserId == id);
         }
 
-        public async Task PutUser(User userParam, string password = null)
+        public void PutUser(User userParam, string password = null)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(a => a.UserId == userParam.UserId);
+            var user = _context.Users.FirstOrDefault(a => a.UserId == userParam.UserId);
 
             if (user != null)
             {
@@ -104,17 +102,17 @@ namespace Dorywcza.Services.AuthService
                 #endregion
 
                 _context.Users.Update(user);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
         }
 
-        public async Task DeleteUser(int id)
+        public void DeleteUser(int id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(a => a.UserId == id);
+            var user = _context.Users.FirstOrDefault(a => a.UserId == id);
             if (user != null)
             {
                 _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
         }
 

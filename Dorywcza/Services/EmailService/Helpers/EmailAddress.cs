@@ -3,7 +3,7 @@
     public class EmailAddress
     {
         public string Name { get; set; } = "Dorywcza.pl";
-        public string Address { get; set; } = "covalig.ligese@gmail.com";
+        public string Address { get; set; } = "wojciech@dorywcza.pl";
 
         public EmailAddress() { }
         public EmailAddress(string name, string address)
