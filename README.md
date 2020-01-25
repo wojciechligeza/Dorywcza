@@ -1,4 +1,4 @@
-# DORYWCZA API
+# DORYWCZA API - LINK(https://dorywcza.azurewebsites.net/swagger/index.html) TO AZURE WEBSITE
 
 Server-side app providing Web API created with .NET Core
 
@@ -6,15 +6,15 @@ Server-side app providing Web API created with .NET Core
 
 * [General info](#general-info)
 * [Technologies](#technologies)
-* [Setup](#run)
+* [Run](#run)
 
 ## General info
 
 This Web API:
-- serves and receive data stored in Azure SQL Database to Dorywcza Client App - [link](https://dorywcza-client.azurewebsites.net) using HTTP requests;
-- send emails to users;
-- authenticate user during registration and logging in;
-- migrate data beetween controllers and database;
+- serves and receives data stored in Azure SQL Database to Dorywcza Client App([link](https://dorywcza-client.azurewebsites.net)) using HTTP requests;
+- sends emails to users;
+- authenticates user during registration and logging in;
+- migrates data beetween controllers and database;
 
 ## Technologies
 
@@ -26,7 +26,7 @@ App is basically based on .NET Core 3, however some feature required additonal p
 - receving request from client in JSON format with NewtonsoftJson;
 - Swagger for testing with Swashbuckle;
 
-Additionaly app can be containerized as docker files (docker-compose) are setup.
+Additionaly app can be containerized as docker files (docker-compose) are set up.
 
 ## Run
 
